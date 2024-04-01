@@ -12,6 +12,14 @@ export class TokenService {
     });
   }
 
+  async getToken(
+    tokenWhereUniqueInput: Prisma.PyShopTokenWhereUniqueInput,
+  ): Promise<PyShopToken> {
+    return this.prisma.pyShopToken.findUnique({
+      where: tokenWhereUniqueInput,
+    });
+  }
+
   async refreshToken(params: {
     where: Prisma.PyShopTokenWhereUniqueInput;
     data: Prisma.PyShopTokenUpdateInput;
@@ -22,5 +30,11 @@ export class TokenService {
       data,
       where,
     });
+  }
+
+  async deleteToken(
+    where: Prisma.PyShopTokenWhereUniqueInput,
+  ): Promise<PyShopToken> {
+    return this.prisma.pyShopToken.delete({ where });
   }
 }

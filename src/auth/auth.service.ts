@@ -15,11 +15,22 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  async signUp(email: string, pass: string) {
+  async signUp(username: string, email: string, pass: string) {
     const saltOrRounds = 10;
     const hashPassword = await bcrypt.hash(pass, saltOrRounds);
 
-    await this.usersService.createUser({ email, password: hashPassword });
+    const newUser = await this.usersService.createUser({
+      email,
+      password: hashPassword,
+    });
+    await this.profilesService.createProfile({
+      name: username,
+      user: {
+        connect: {
+          id: newUser.id,
+        },
+      },
+    });
   }
 
   async signIn(email: string, pass: string): Promise<{ access_token: string }> {
@@ -30,20 +41,23 @@ export class AuthService {
     const isPassword = await bcrypt.compare(pass, user?.password);
 
     if (!isPassword) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Введите корректные данные');
     }
 
     const payload = { sub: user.id, username: userProfile.name };
     const generatedToken = await this.jwtService.signAsync(payload);
+    const oldToken = await this.tokenService.getToken({ userId: user.id });
+
+    if (oldToken) {
+      await this.tokenService.deleteToken({ userId: user.id });
+    }
+
     const { token } = await this.tokenService.createToken({
       token: generatedToken,
       user: {
-        create: undefined,
-        connectOrCreate: {
-          where: undefined,
-          create: undefined,
+        connect: {
+          id: user.id,
         },
-        connect: undefined,
       },
     });
 

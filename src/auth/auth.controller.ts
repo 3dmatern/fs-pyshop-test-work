@@ -16,8 +16,10 @@ interface AuthDto {
   password: string;
 }
 
+export interface SignUpDto extends AuthDto {
+  username: string;
+}
 export interface SignInDto extends AuthDto {}
-export interface SignUpDto extends AuthDto {}
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -25,7 +27,11 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
   signUp(@Body() signUpDto: SignUpDto) {
-    this.authService.signUp(signUpDto.email, signUpDto.password);
+    this.authService.signUp(
+      signUpDto.username,
+      signUpDto.email,
+      signUpDto.password,
+    );
   }
 
   @HttpCode(HttpStatus.OK)

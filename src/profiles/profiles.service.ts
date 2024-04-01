@@ -15,6 +15,12 @@ export type Profile = {
 export class ProfilesService {
   constructor(private prisma: PrismaService) {}
 
+  async createProfile(
+    data: Prisma.PyShopProfileCreateInput,
+  ): Promise<PyShopProfile> {
+    return this.prisma.pyShopProfile.create({ data });
+  }
+
   async getProfile(
     profileWhereUniqueInput: Prisma.PyShopProfileWhereUniqueInput,
   ): Promise<PyShopProfile | null> {

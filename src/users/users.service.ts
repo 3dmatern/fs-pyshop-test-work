@@ -6,8 +6,8 @@ import { PrismaService } from '../prisma/prisma.service';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(data: Prisma.PyShopUserCreateInput) {
-    this.prisma.pyShopUser.create({
+  async createUser(data: Prisma.PyShopUserCreateInput): Promise<PyShopUser> {
+    return this.prisma.pyShopUser.create({
       data,
     });
   }
