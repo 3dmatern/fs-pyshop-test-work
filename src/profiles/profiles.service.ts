@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma, PyShopProfile } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 export type Profile = {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   name: string;
   tel: string;
   address: string;
@@ -11,26 +13,13 @@ export type Profile = {
 
 @Injectable()
 export class ProfilesService {
-  private readonly profiles = [
-    {
-      id: 1,
-      userId: 1,
-      name: 'John',
-      tel: '+375441234567',
-      address: 'Belarus, Minsk',
-      aboutMe: 'Обо мне',
-    },
-    {
-      id: 2,
-      userId: 2,
-      name: 'Maria',
-      tel: '+375441234567',
-      address: 'Belarus, Gomel',
-      aboutMe: 'Обо мне',
-    },
-  ];
+  constructor(private prisma: PrismaService) {}
 
-  async findOne(userId: number): Promise<Profile | undefined> {
-    return this.profiles.find((profile) => profile.userId === userId);
+  async getProfile(
+    profileWhereUniqueInput: Prisma.PyShopProfileWhereUniqueInput,
+  ): Promise<PyShopProfile | null> {
+    return this.prisma.pyShopProfile.findUnique({
+      where: profileWhereUniqueInput,
+    });
   }
 }

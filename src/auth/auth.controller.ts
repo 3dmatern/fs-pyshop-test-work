@@ -11,13 +11,22 @@ import {
 import { AuthService } from './auth.service';
 import { AppGuard } from '../app.guard';
 
-export type SignInDto = {
+interface AuthDto {
   email: string;
   password: string;
-};
+}
+
+export interface SignInDto extends AuthDto {}
+export interface SignUpDto extends AuthDto {}
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post('register')
+  signUp(@Body() signUpDto: SignUpDto) {
+    this.authService.signUp(signUpDto.email, signUpDto.password);
+  }
 
   @HttpCode(HttpStatus.OK)
   @Post('login')

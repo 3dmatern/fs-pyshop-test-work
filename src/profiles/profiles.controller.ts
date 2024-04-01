@@ -17,7 +17,7 @@ export class ProfilesController {
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   getUser(@Param('id') id: string): Promise<Profile> {
-    const findProfile = this.profilesService.findOne(+id);
+    const findProfile = this.profilesService.getProfile({ userId: id });
 
     return findProfile;
   }

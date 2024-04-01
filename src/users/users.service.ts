@@ -1,28 +1,42 @@
 import { Injectable } from '@nestjs/common';
-
-// This should be a real class/interface representing a user entity
-export type User = {
-  id: number;
-  email: string;
-  password: string;
-};
+import { Prisma, PyShopUser } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  private readonly users = [
-    {
-      id: 1,
-      email: 'john@mail.ru',
-      password: 'changeme',
-    },
-    {
-      id: 2,
-      email: 'maria@mail.ru',
-      password: 'guess',
-    },
-  ];
+  constructor(private prisma: PrismaService) {}
 
-  async findOne(email: string): Promise<User | undefined> {
-    return this.users.find((user) => user.email === email);
+  async createUser(data: Prisma.PyShopUserCreateInput) {
+    this.prisma.pyShopUser.create({
+      data,
+    });
+  }
+
+  async getUser(
+    userWhereUniqueInput: Prisma.PyShopUserWhereUniqueInput,
+  ): Promise<PyShopUser | null> {
+    return this.prisma.pyShopUser.findUnique({
+      where: userWhereUniqueInput,
+    });
+  }
+
+  async updateUser(params: {
+    where: Prisma.PyShopUserWhereUniqueInput;
+    data: Prisma.PyShopUserUpdateInput;
+  }): Promise<PyShopUser> {
+    const { where, data } = params;
+
+    return this.prisma.pyShopUser.update({
+      data,
+      where,
+    });
+  }
+
+  async deleteUser(
+    where: Prisma.PyShopUserWhereUniqueInput,
+  ): Promise<PyShopUser> {
+    return this.prisma.pyShopUser.delete({
+      where,
+    });
   }
 }

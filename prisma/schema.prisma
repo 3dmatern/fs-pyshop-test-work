@@ -15,7 +15,7 @@ datasource db {
 
 model PyShopToken {
   id     String     @id @default(cuid())
-  token  String?
+  token  String
   user   PyShopUser       @relation(fields: [userId], references: [id], onDelete: Cascade )
   userId String     @unique
 }
