@@ -1,30 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { Profile, ProfilesService } from 'src/profiles/profiles.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    console.log(createAuthDto);
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+    private profilesService: ProfilesService,
+  ) {}
 
-    return 'This action adds a new auth';
-  }
+  async signIn(
+    email: string,
+    pass: string,
+  ): Promise<{ access_token: string; user_profile: Profile }> {
+    const user = await this.usersService.findOne(email);
+    const userProfile = await this.profilesService.findOne(user.id);
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+    if (user?.password !== pass) {
+      throw new UnauthorizedException();
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    const payload = { sub: user.id, username: userProfile.name };
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    console.log(updateAuthDto);
-
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+      user_profile: userProfile,
+    };
   }
 }

@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+}
+
+model PyShopToken {
+  id     String     @id @default(cuid())
+  token  String?
+  user   PyShopUser       @relation(fields: [userId], references: [id], onDelete: Cascade )
+  userId String     @unique
+}
+
+model PyShopProfile {
+  id      String     @id @default(cuid())
+  name    String?
+  tel     String?
+  address String?
+  aboutMe String?
+  user    PyShopUser       @relation(fields: [userId], references: [id], onDelete: Cascade )
+  userId  String     @unique
+}
+
+model PyShopUser {
+  id        String      @id @default(cuid())
+  email     String      @unique
+  password  String
+  token     PyShopToken?
+  profile   PyShopProfile?
+}
