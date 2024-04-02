@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -41,8 +40,11 @@ export class AuthController {
   }
 
   @UseGuards(AppGuard)
-  @Get('token')
+  @HttpCode(HttpStatus.OK)
+  @Post('token')
   refreshToken(@Request() req) {
-    return req.user;
+    const user = req.user;
+
+    return this.authService.refreshToken(user);
   }
 }

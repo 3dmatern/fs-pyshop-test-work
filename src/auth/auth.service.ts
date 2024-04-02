@@ -65,4 +65,15 @@ export class AuthService {
       access_token: token,
     };
   }
+
+  async refreshToken(user: { sub: string; username: string }): Promise<string> {
+    const payload = { sub: user.sub, username: user.username };
+    const generatedToken = await this.jwtService.signAsync(payload);
+    const newAccessToken = await this.tokenService.refreshToken({
+      where: { userId: user.sub },
+      data: { token: generatedToken },
+    });
+
+    return newAccessToken.token;
+  }
 }

@@ -25,8 +25,8 @@ export class AppGuard implements CanActivate {
         secret: jwtConstants.secret,
       });
 
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
+      // 💡Здесь мы назначаем полезную нагрузку объекту запроса.
+      // чтобы мы могли получить к нему доступ в наших обработчиках маршрутов
       request['user'] = payload;
     } catch {
       throw new UnauthorizedException();
