@@ -1,10 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
-import { ProfilesService } from 'src/profiles/profiles.service';
-import { TokenService } from 'src/token/token.service';
-import { UsersService } from 'src/users/users.service';
+import { ProfilesService } from '../profiles/profiles.service';
+import { TokenService } from '../token/token.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -16,15 +21,23 @@ export class AuthService {
   ) {}
 
   async signUp(username: string, email: string, pass: string) {
+    const { usernameTrim, isNotUsername } = this.validateUsername(username);
+    const { emailTrim, isEmail } = this.validateEmail(email);
+    const { passTrim, isNotPass } = this.validatePass(pass);
+
+    if (isNotUsername || !isEmail || isNotPass) {
+      throw new BadRequestException('Заполните все поля');
+    }
+
     const saltOrRounds = 10;
-    const hashPassword = await bcrypt.hash(pass, saltOrRounds);
+    const hashPassword = await bcrypt.hash(passTrim, saltOrRounds);
 
     const newUser = await this.usersService.create({
-      email,
+      email: emailTrim,
       password: hashPassword,
     });
     await this.profilesService.create({
-      name: username,
+      name: usernameTrim,
       user: {
         connect: {
           id: newUser.id,
@@ -34,7 +47,18 @@ export class AuthService {
   }
 
   async signIn(email: string, pass: string): Promise<{ access_token: string }> {
-    const user = await this.usersService.findOne({ email });
+    const { emailTrim, isEmail } = this.validateEmail(email);
+
+    if (!isEmail) {
+      throw new UnauthorizedException('Введите корректный email');
+    }
+
+    const user = await this.usersService.findOne({ email: emailTrim });
+
+    if (!user) {
+      throw new BadRequestException('Введите корректные данные');
+    }
+
     const userProfile = await this.profilesService.findOne({
       userId: user.id,
     });
@@ -75,5 +99,43 @@ export class AuthService {
     });
 
     return newAccessToken.token;
+  }
+
+  private validateUsername(
+    username: string | Prisma.StringFieldUpdateOperationsInput,
+  ): {
+    usernameTrim: string;
+    isNotUsername: boolean;
+  } {
+    const usernameTrim = username.toString().trim();
+    const isNotUsername =
+      usernameTrim === '' ||
+      usernameTrim.length < 2 ||
+      usernameTrim.length > 30;
+
+    return { usernameTrim, isNotUsername };
+  }
+
+  private validateEmail(email: string): {
+    emailTrim: string;
+    isEmail: boolean;
+  } {
+    const emailTrim = email.toString().trim();
+    const isEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+      emailTrim,
+    );
+
+    return { emailTrim, isEmail };
+  }
+
+  private validatePass(pass: string): {
+    passTrim: string;
+    isNotPass: boolean;
+  } {
+    const passTrim = pass.toString().trim();
+    const isNotPass =
+      passTrim === '' || passTrim.length < 6 || passTrim.length > 20;
+
+    return { passTrim, isNotPass };
   }
 }
