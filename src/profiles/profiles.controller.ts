@@ -31,7 +31,6 @@ export class ProfilesController {
   @Post()
   updateProfile(@Request() req, @Body() updateProfileDto: Profile) {
     const user: ParseToken = req.user;
-    console.log(user);
 
     const updatedProfile = this.profilesService.update({
       where: {
