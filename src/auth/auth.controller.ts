@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AppGuard } from '../app.guard';
+import { ParseToken } from 'src/token/token.module';
 
 interface AuthDto {
   email: string;
@@ -43,7 +44,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('token')
   refreshToken(@Request() req) {
-    const user = req.user;
+    const user: ParseToken = req.user;
 
     return this.authService.refreshToken(user);
   }

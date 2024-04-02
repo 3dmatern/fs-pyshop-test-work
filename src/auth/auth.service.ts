@@ -19,11 +19,11 @@ export class AuthService {
     const saltOrRounds = 10;
     const hashPassword = await bcrypt.hash(pass, saltOrRounds);
 
-    const newUser = await this.usersService.createUser({
+    const newUser = await this.usersService.create({
       email,
       password: hashPassword,
     });
-    await this.profilesService.createProfile({
+    await this.profilesService.create({
       name: username,
       user: {
         connect: {
@@ -34,8 +34,8 @@ export class AuthService {
   }
 
   async signIn(email: string, pass: string): Promise<{ access_token: string }> {
-    const user = await this.usersService.getUser({ email });
-    const userProfile = await this.profilesService.getProfile({
+    const user = await this.usersService.findOne({ email });
+    const userProfile = await this.profilesService.findOne({
       userId: user.id,
     });
     const isPassword = await bcrypt.compare(pass, user?.password);

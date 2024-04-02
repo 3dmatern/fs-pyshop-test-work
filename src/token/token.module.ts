@@ -8,3 +8,10 @@ import { PrismaModule } from '../prisma/prisma.module';
   exports: [TokenService],
 })
 export class TokenModule {}
+
+export type ParseToken = {
+  sub: string;
+  username: string;
+  iat: number;
+  exp: number;
+};

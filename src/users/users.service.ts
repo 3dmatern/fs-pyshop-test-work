@@ -6,13 +6,13 @@ import { PrismaService } from '../prisma/prisma.service';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(data: Prisma.PyShopUserCreateInput): Promise<PyShopUser> {
+  async create(data: Prisma.PyShopUserCreateInput): Promise<PyShopUser> {
     return this.prisma.pyShopUser.create({
       data,
     });
   }
 
-  async getUser(
+  async findOne(
     userWhereUniqueInput: Prisma.PyShopUserWhereUniqueInput,
   ): Promise<PyShopUser | null> {
     return this.prisma.pyShopUser.findUnique({
@@ -20,7 +20,7 @@ export class UsersService {
     });
   }
 
-  async updateUser(params: {
+  async update(params: {
     where: Prisma.PyShopUserWhereUniqueInput;
     data: Prisma.PyShopUserUpdateInput;
   }): Promise<PyShopUser> {
@@ -32,9 +32,7 @@ export class UsersService {
     });
   }
 
-  async deleteUser(
-    where: Prisma.PyShopUserWhereUniqueInput,
-  ): Promise<PyShopUser> {
+  async delete(where: Prisma.PyShopUserWhereUniqueInput): Promise<PyShopUser> {
     return this.prisma.pyShopUser.delete({
       where,
     });

@@ -1,13 +1,17 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { Profile, ProfilesService } from './profiles.service';
 import { AppGuard } from '../app.guard';
+import { ParseToken } from 'src/token/token.module';
 
 @Controller('profiles')
 export class ProfilesController {
@@ -16,9 +20,26 @@ export class ProfilesController {
   @UseGuards(AppGuard)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
-  getUser(@Param('id') id: string): Promise<Profile> {
-    const findProfile = this.profilesService.getProfile({ userId: id });
+  getProfile(@Param('id') id: string) {
+    const findProfile = this.profilesService.findOne({ userId: id });
 
     return findProfile;
+  }
+
+  @UseGuards(AppGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post()
+  updateProfile(@Request() req, @Body() updateProfileDto: Profile) {
+    const user: ParseToken = req.user;
+    console.log(user);
+
+    const updatedProfile = this.profilesService.update({
+      where: {
+        userId: user.sub,
+      },
+      data: updateProfileDto,
+    });
+
+    return updatedProfile;
   }
 }

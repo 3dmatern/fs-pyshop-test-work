@@ -22,7 +22,7 @@ model PyShopToken {
 
 model PyShopProfile {
   id      String     @id @default(cuid())
-  name    String?
+  name    String
   tel     String?
   address String?
   aboutMe String?
