@@ -34,7 +34,7 @@ export class ProfilesService {
     const { where, data } = params;
     const { usernameTrim, isNotUsername } = this.validateUsername(data.name);
 
-    if (!isNotUsername) {
+    if (isNotUsername) {
       throw new BadRequestException('Введите имя');
     }
 
