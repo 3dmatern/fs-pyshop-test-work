@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
-import { AppGuard } from 'src/app.guard';
-import { ParseToken } from 'src/token/token.module';
+import { AppGuard } from '../app.guard';
+import { ParseToken } from '../token/token.module';
 
 @Controller('users')
 export class UsersController {

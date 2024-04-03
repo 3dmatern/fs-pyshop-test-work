@@ -9,9 +9,10 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+
 import { Profile, ProfilesService } from './profiles.service';
 import { AppGuard } from '../app.guard';
-import { ParseToken } from 'src/token/token.module';
+import { ParseToken } from '../token/token.module';
 
 @Controller('profiles')
 export class ProfilesController {

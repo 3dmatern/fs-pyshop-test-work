@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AppGuard } from '../app.guard';
-import { ParseToken } from 'src/token/token.module';
+import { ParseToken } from '../token/token.module';
 
 interface AuthDto {
   email: string;

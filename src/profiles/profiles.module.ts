@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+
 import { ProfilesService } from './profiles.service';
 import { ProfilesController } from './profiles.controller';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [PrismaModule],
