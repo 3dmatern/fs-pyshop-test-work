@@ -7,12 +7,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
-  // const frontendPyShop = configService.get('CORS_ORIGIN_FRONTEND_PYSHOP');
 
-  // app.enableCors({
-  //   origin: frontendPyShop,
-  // });
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      'http://localhost:9000',
+      'http://localhost',
+      'https://pyshop-frontend.vercel.app',
+      'http://dmatern.ru',
+      'https://dmatern.ru',
+    ],
+  });
   app.setGlobalPrefix('api');
   await app.listen(port);
 }
